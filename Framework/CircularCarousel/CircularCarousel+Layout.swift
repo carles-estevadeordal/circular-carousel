@@ -32,7 +32,11 @@ extension CircularCarousel {
         return CGFloat(1.0 - min(factor, fadeRange) / fadeRange * (1.0 - fadeMinAlpha))
     }
     
-    internal func value<T>(forOption option: CircularCarouselOption, withDefaultValue defaultValue: T) -> T {
+    internal func value(forOption option: CircularCarouselOption, withDefaultValue defaultValue: CGFloat) -> CGFloat {
+        return _delegate?.carousel(self, valueForOption: option, withDefaultValue: defaultValue) ?? defaultValue
+    }
+    
+    internal func value(forOption option: CircularCarouselOption, withDefaultValue defaultValue: Bool) -> Bool {
         return _delegate?.carousel(self, valueForOption: option, withDefaultValue: defaultValue) ?? defaultValue
     }
     
@@ -125,8 +129,7 @@ extension CircularCarousel {
         view.superview?.layer.transform = transform
         
         // Cull backfaces
-        let showBackfaces = value(forOption: .showBackfaces,
-                                  withDefaultValue: view.layer.isDoubleSided)
+        let showBackfaces = value(forOption: .showBackfaces, withDefaultValue: view.layer.isDoubleSided)
         
         view.superview?.isHidden = !(showBackfaces ? showBackfaces : (transform.m33 > 0.0))
     }
@@ -159,7 +162,7 @@ extension CircularCarousel {
         
         numberOfVisibleItems = Int(ceil(width / itemWidthWithSpacing)) + 2
         numberOfVisibleItems = min(CircularCarouselConstants.maximumVisibleItems, numberOfVisibleItems)
-        numberOfVisibleItems = value(forOption: .visibleItems, withDefaultValue: numberOfVisibleItems)
+        numberOfVisibleItems = Int(value(forOption: .visibleItems, withDefaultValue: CGFloat(numberOfVisibleItems)))
     }
     
     internal func layoutItemViews() {
